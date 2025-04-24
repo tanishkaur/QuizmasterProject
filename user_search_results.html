@@ -1,0 +1,65 @@
+{% extends 'user_base.html' %}
+{% block body %}
+<div class="container mt-4">
+    <h2>Search Results for "{{ query }}"</h2>
+    
+    {% if subjects or quizzes %}
+        <!-- Subjects Section -->
+        {% if subjects %}
+        <div class="search-section">
+            <h3>Subjects</h3>
+            <div class="row">
+                {% for subject in subjects %}
+                <div class="col-md-4 mb-4">
+                    <div class="subject-card">
+                        <div class="card-body">
+                            <h4 class="subject-title">{{ subject.subject_name }}</h4>
+                            <p class="subject-description">{{ subject.description }}</p>
+                            <a href="{{ url_for('view_chapters', subject_id=subject.id) }}" class="btn btn-primary">View Chapters</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Quizzes Section -->
+        {% if quizzes %}
+        <div class="search-section">
+            <h3>Quizzes</h3>
+            <div class="row">
+                {% for quiz in quizzes %}
+                <div class="col-md-4 mb-4">
+                    <div class="quiz-card">
+                        <div class="card-content">
+                            <h4>{{ quiz.name }}</h4>
+                            <div class="quiz-info">
+                                <div class="info-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>{{ quiz.time_duration }} minutes</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-info-circle"></i>
+                                    <p class="remarks">{{ quiz.remarks }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <a href="{{ url_for('take_quiz', quiz_id=quiz.id) }}" class="btn btn-primary">Take Quiz</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    {% else %}
+        <div class="alert alert-info">No results found for "{{ query }}"</div>
+    {% endif %}
+    
+    <div class="text-center mt-4">
+        <a href="{{ url_for('user_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

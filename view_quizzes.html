@@ -1,0 +1,40 @@
+{% extends 'user_base.html' %}
+{% block body %}
+
+<div class="container mt-4">
+    <div class="page-header">
+        <h2>Quizzes in {{ chapter.name }}</h2>
+        <p>Choose a quiz to test your knowledge</p>
+    </div>
+
+    <div class="row">
+        {% for quiz in quizzes %}
+        <div class="col-md-4 mb-4">
+            <div class="quiz-card">
+                <div class="card-content">
+                    <h4>{{ quiz.name }}</h4>
+                    <div class="quiz-info">
+                        <div class="info-item">
+                            <i class="fas fa-clock"></i>
+                            <span>{{ quiz.time_duration }} minutes</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-info-circle"></i>
+                            <p class="remarks">{{ quiz.remarks }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('take_quiz', quiz_id=quiz.id) }}" class="btn btn-primary">Take Quiz</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="text-center mt-4">
+        <a href="{{ url_for('view_chapters', subject_id=chapter.subject_id) }}" class="btn btn-secondary">Back to Chapters</a>
+    </div>
+</div>
+
+{% endblock body %}

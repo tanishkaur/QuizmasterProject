@@ -1,0 +1,120 @@
+{% extends 'user_base.html' %}
+{% block body %}
+<div class="container mt-4">
+    <div class="dashboard-header">
+        <h2>Your Quiz Performance Summary</h2>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Quiz Performance</h4>
+                </div>
+                <div class="card-body">
+                    <img src="data:image/png;base64,{{ bar_chart }}" alt="Quiz Performance Chart" class="img-fluid">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Overall Accuracy</h4>
+                </div>
+                <div class="card-body">
+                    <img src="data:image/png;base64,{{ pie_chart }}" alt="Accuracy Pie Chart" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Overall Statistics</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 text-center">
+                    <div class="stat-box">
+                        <h3>{{ overall_stats.total_quizzes }}</h3>
+                        <p>Quizzes Taken</p>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center">
+                    <div class="stat-box">
+                        <h3>{{ overall_stats.total_questions }}</h3>
+                        <p>Total Questions</p>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center">
+                    <div class="stat-box">
+                        <h3>{{ overall_stats.total_correct }}</h3>
+                        <p>Correct Answers</p>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center">
+                    <div class="stat-box">
+                        <h3>{{ overall_stats.accuracy }}%</h3>
+                        <p>Overall Accuracy</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h4>Detailed Quiz History</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Quiz Name</th>
+                            <th>Subject</th>
+                            <th>Chapter</th>
+                            <th>Score</th>
+                            <th>Percentage</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for quiz in quiz_data %}
+                        <tr>
+                            <td>{{ quiz.quiz_name }}</td>
+                            <td>{{ quiz.subject }}</td>
+                            <td>{{ quiz.chapter }}</td>
+                            <td>{{ quiz.score }} / {{ quiz.max_score }}</td>
+                            <td>{{ quiz.percentage }}%</td>
+                            <td>{{ quiz.date }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .stat-box {
+        padding: 20px;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+        margin-bottom: 15px;
+    }
+    
+    .stat-box h3 {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #1d0548;
+    }
+    
+    .stat-box p {
+        margin-bottom: 0;
+        color: #6c757d;
+    }
+</style>
+{% endblock body %} 

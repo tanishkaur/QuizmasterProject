@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block body %}
+    
+
+
+    <div class="container mt-4">
+        <h2>Welcome, {{ admin.username }}!</h2>
+        <p>Manage your subjects, chapters, and quizzes here.</p>
+
+        <div class="admin-actions">
+            <a href="{{ url_for('manage_subjects') }}" class="btn btn-primary">Manage Subjects</a>
+            <a href="{{ url_for('manage_chapters') }}" class="btn btn-secondary">Manage Chapters</a>
+            <a href="{{ url_for('manage_quizzes') }}" class="btn btn-info">Manage Quizzes</a>
+            <a href="{{ url_for('admin_summary') }}" class="btn btn-success">View Analytics</a>
+        </div>
+    
+    </div>
+
+</body>
+</html>
+{% endblock body %}

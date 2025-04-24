@@ -1,0 +1,31 @@
+{% extends 'user_base.html' %}
+{% block body %}
+
+<div class="container mt-4">
+    <div class="page-header">
+        <h2>Chapters in {{ subject.subject_name }}</h2>
+        <p>Select a chapter to view its quizzes</p>
+    </div>
+
+    <div class="row">
+        {% for chapter in chapters %}
+        <div class="col-md-4 mb-4">
+            <div class="chapter-card">
+                <div class="card-content">
+                    <h4>{{ chapter.name }}</h4>
+                    <p class="description">{{ chapter.description }}</p>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('view_quizzes', chapter_id=chapter.id) }}" class="btn btn-primary">View Quizzes</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="text-center mt-4">
+        <a href="{{ url_for('user_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+
+{% endblock body %}

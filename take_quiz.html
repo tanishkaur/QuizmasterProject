@@ -1,0 +1,153 @@
+Conversations
+25.94 GB of 100 GB used
+Terms · Privacy · Program Policies
+Last account activity: 0 minutes ago
+Open in 1 other location · Details
+{% extends 'user_base.html' %}
+{% block body %}
+
+<div class="container mt-4">
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h2>Quiz: {{ quiz.name }}</h2>
+            <div class="quiz-info">
+                <div class="timer-container">
+                    <div id="timer" class="timer">
+                        <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>
+                    </div>
+                </div>
+                <span class="badge bg-info">Time: {{ quiz.time_duration }}</span>
+                <span class="badge bg-secondary">Date: {{ quiz.quiz_date.strftime('%Y-%m-%d') }}</span>
+            </div>
+        </div>
+        
+        <form method="POST" id="quiz-form">
+            {% for question in questions %}
+            <div class="question-card">
+                <div class="question-number">Question {{ loop.index }}/{{ questions|length }}</div>
+                <h5 class="question-text">{{ question.quiz_question }}</h5>
+                
+                <div class="options-container">
+                    <div class="option-item">
+                        <input type="radio" id="q{{ question.id }}_1" name="question_{{ question.id }}" value="1" class="form-check-input">
+                        <label for="q{{ question.id }}_1" class="option-label">
+                            <span class="option-marker">A</span>
+                            <span class="option-text">{{ question.option1 }}</span>
+                        </label>
+                    </div>
+                    
+                    <div class="option-item">
+                        <input type="radio" id="q{{ question.id }}_2" name="question_{{ question.id }}" value="2" class="form-check-input">
+                        <label for="q{{ question.id }}_2" class="option-label">
+                            <span class="option-marker">B</span>
+                            <span class="option-text">{{ question.option2 }}</span>
+                        </label>
+                    </div>
+                    
+                    <div class="option-item">
+                        <input type="radio" id="q{{ question.id }}_3" name="question_{{ question.id }}" value="3" class="form-check-input">
+                        <label for="q{{ question.id }}_3" class="option-label">
+                            <span class="option-marker">C</span>
+                            <span class="option-text">{{ question.option3 }}</span>
+                        </label>
+                    </div>
+                    
+                    <div class="option-item">
+                        <input type="radio" id="q{{ question.id }}_4" name="question_{{ question.id }}" value="4" class="form-check-input">
+                        <label for="q{{ question.id }}_4" class="option-label">
+                            <span class="option-marker">D</span>
+                            <span class="option-text">{{ question.option4 }}</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            
+            <div class="quiz-controls">
+                <button type="submit" class="btn btn-primary btn-lg">Submit Quiz</button>
+                <a href="{{ url_for('user_dashboard') }}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Add a modal for time's up notification -->
+<div id="timeUpModal" class="modal">
+    <div class="modal-content">
+        <h3 class="modal-title">Time's Up!</h3>
+        <p class="modal-text">Your time for this quiz has expired. Your answers will be submitted automatically.</p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Parse the time duration (HH:MM) from the quiz
+        const timeDuration = "{{ quiz.time_duration }}";
+        let totalSeconds = 0;
+        
+        if (timeDuration) {
+            const timeParts = timeDuration.split(':');
+            if (timeParts.length >= 2) {
+                const hours = parseInt(timeParts[0]) || 0;
+                const minutes = parseInt(timeParts[1]) || 0;
+                totalSeconds = (hours * 3600) + (minutes * 60);
+            }
+        }
+        
+        // If no valid duration, default to 30 minutes
+        if (totalSeconds <= 0) {
+            totalSeconds = 30 * 60;
+        }
+        
+        // Get timer elements
+        const hoursEl = document.getElementById('hours');
+        const minutesEl = document.getElementById('minutes');
+        const secondsEl = document.getElementById('seconds');
+        const timerEl = document.getElementById('timer');
+        const quizForm = document.getElementById('quiz-form');
+        const timeUpModal = document.getElementById('timeUpModal');
+        
+        // Setup timer
+        let remainingSeconds = totalSeconds;
+        updateTimerDisplay();
+        
+        // Start the countdown
+        const countdown = setInterval(function() {
+            remainingSeconds--;
+            
+            if (remainingSeconds <= 0) {
+                // Time's up
+                clearInterval(countdown);
+                timeUpModal.style.display = 'block';
+                
+                // Automatically submit the form after 3 seconds
+                setTimeout(function() {
+                    quizForm.submit();
+                }, 3000);
+                return;
+            }
+            
+            // Update timer display
+            updateTimerDisplay();
+            
+            // Add warning classes as time gets low
+            if (remainingSeconds <= 60) { // Last minute
+                timerEl.classList.add('danger');
+            } else if (remainingSeconds <= 300) { // Last 5 minutes
+                timerEl.classList.add('warning');
+            }
+        }, 1000);
+        
+        function updateTimerDisplay() {
+            const hours = Math.floor(remainingSeconds / 3600);
+            const minutes = Math.floor((remainingSeconds % 3600) / 60);
+            const seconds = remainingSeconds % 60;
+            
+            hoursEl.textContent = String(hours).padStart(2, '0');
+            minutesEl.textContent = String(minutes).padStart(2, '0');
+            secondsEl.textContent = String(seconds).padStart(2, '0');
+        }
+    });
+</script>
+
+{% endblock body %}

@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+{% block body %}
+<div class="container mt-4">
+    <div class="dashboard-header d-flex justify-content-between align-items-center mb-4">
+        <h2>Quiz Performance Analytics</h2>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+    
+    <div class="row mt-4">
+        <!-- Overall Stats Cards -->
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Overall Statistics</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-2 text-center">
+                            <div class="stat-box">
+                                <h3>{{ overall_stats.total_quizzes if overall_stats else 'N/A' }}</h3>
+                                <p>Total Quizzes</p>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <div class="stat-box">
+                                <h3>{{ overall_stats.total_attempts }}</h3>
+                                <p>Total Attempts</p>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <div class="stat-box">
+                                <h3>{{ overall_stats.active_users }}</h3>
+                                <p>Active Users</p>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <div class="stat-box">
+                                <h3>{{ overall_stats.total_users }}</h3>
+                                <p>Total Users</p>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <div class="stat-box">
+                                <h3>{{ overall_stats.participation_rate }}%</h3>
+                                <p>Participation Rate</p>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <div class="stat-box">
+                                <h3>{{ overall_stats.overall_accuracy }}%</h3>
+                                <p>Overall Accuracy</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Quiz Participation Chart -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">Quiz Participation</h4>
+                </div>
+                <div class="card-body">
+                    <img src="data:image/png;base64,{{ participation_chart }}" alt="Quiz Participation Chart" class="img-fluid">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quiz Performance Chart -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Quiz Performance</h4>
+                </div>
+                <div class="card-body">
+                    <img src="data:image/png;base64,{{ performance_chart }}" alt="Quiz Performance Chart" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Overall Accuracy Pie Chart -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">Overall Accuracy</h4>
+                </div>
+                <div class="card-body text-center">
+                    <img src="data:image/png;base64,{{ accuracy_chart }}" alt="Accuracy Pie Chart" class="img-fluid" style="max-height: 350px;">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Top Performing Quizzes -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">Top/Bottom Quizzes</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Most Attempted</h5>
+                            <ol class="list-group list-group-numbered">
+                                {% set sorted_by_attempts = quiz_data|sort(attribute='attempts', reverse=true) %}
+                                {% for quiz in sorted_by_attempts[:5] %}
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">{{ quiz.name }}</div>
+                                        {{ quiz.attempts }} attempts
+                                    </div>
+                                </li>
+                                {% endfor %}
+                            </ol>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Highest Scoring</h5>
+                            <ol class="list-group list-group-numbered">
+                                {% set sorted_by_score = quiz_data|sort(attribute='avg_percentage', reverse=true) %}
+                                {% for quiz in sorted_by_score %}
+                                    {% if quiz.attempts > 0 and loop.index <= 5 %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                        <div class="ms-2 me-auto">
+                                            <div class="fw-bold">{{ quiz.name }}</div>
+                                            {{ quiz.avg_percentage }}% average
+                                        </div>
+                                    </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Detailed Quiz Data Table -->
+    <div class="card mb-4">
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0">Detailed Quiz Statistics</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Quiz ID</th>
+                            <th>Quiz Name</th>
+                            <th>Subject</th>
+                            <th>Chapter</th>
+                            <th>Questions</th>
+                            <th>Attempts</th>
+                            <th>Avg. Score</th>
+                            <th>Avg. Percentage</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set sorted_table_data = quiz_data|sort(attribute='attempts', reverse=true) %}
+                        {% for quiz in sorted_table_data %}
+                        <tr>
+                            <td>{{ quiz.id }}</td>
+                            <td>{{ quiz.name }}</td>
+                            <td>{{ quiz.subject }}</td>
+                            <td>{{ quiz.chapter }}</td>
+                            <td>{{ quiz.question_count }}</td>
+                            <td>{{ quiz.attempts }}</td>
+                            <td>{{ quiz.avg_score }}</td>
+                            <td>
+                                <div class="progress" style="height: 20px;">
+                                    <div class="progress-bar {% if quiz.avg_percentage < 40 %}bg-danger{% elif quiz.avg_percentage < 70 %}bg-warning{% else %}bg-success{% endif %}" 
+                                         role="progressbar" 
+                                         style="width: {{ quiz.avg_percentage }}%;" 
+                                         aria-valuenow="{{ quiz.avg_percentage }}" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">{{ quiz.avg_percentage }}%</div>
+                                </div>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('manage_questions', quiz_id=quiz.id) }}" class="btn btn-sm btn-primary">Questions</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .stat-box {
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+        margin-bottom: 15px;
+    }
+    
+    .stat-box h3 {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #007bff;
+    }
+    
+    .stat-box p {
+        margin-bottom: 0;
+        color: #6c757d;
+        font-weight: 500;
+    }
+    
+    .progress {
+        height: 25px;
+    }
+    
+    .progress-bar {
+        line-height: 25px;
+        font-weight: bold;
+    }
+</style>
+{% endblock body %} 

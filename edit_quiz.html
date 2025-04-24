@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block body %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Edit Quiz</h4>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('edit_quiz', quiz_id=quiz.id) }}" method="POST">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Quiz Name</label>
+                            <input type="text" class="form-control" id="name" name="name" value="{{ quiz.name }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="quiz_date" class="form-label">Quiz Date</label>
+                            <input type="date" class="form-control" id="quiz_date" name="quiz_date" value="{{ formatted_date }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="time_duration" class="form-label">Time Duration (HH:MM)</label>
+                            <input type="text" class="form-control" id="time_duration" name="time_duration" value="{{ quiz.time_duration }}" placeholder="01:30" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="chapter_id" class="form-label">Chapter</label>
+                            <select class="form-select" id="chapter_id" name="chapter_id" required>
+                                {% for chapter in chapters %}
+                                <option value="{{ chapter.id }}" {% if chapter.id == quiz.chapter_id %}selected{% endif %}>
+                                    {{ chapter.name }} (Subject: {{ chapter.subject.subject_name }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="remarks" class="form-label">Remarks</label>
+                            <textarea class="form-control" id="remarks" name="remarks" rows="3">{{ quiz.remarks }}</textarea>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('manage_quizzes') }}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock body %} 
